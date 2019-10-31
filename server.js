@@ -1,18 +1,27 @@
-require('dotenv').config()
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
 
-const express = require ('express');
+require('dotenv').config();
+
 const app = express();
-const mongoose = require('mongoose')
+const port = process.env.PORT || 3000;
 
-mongoose.connect(process.env.DATABASE_URL, { useUnifiedTopology: true, useNewUrlParser: true})
-const db = mongoose.connection;
-db.on('error', (error) => console.error(error));
-db.once('open', () => console.log('connected to database'))
-
+app.use(cors());
 app.use(express.json());
 
-const subscribersRouter = require('./routes/subscribers')
-app.use('/subscribers', subscribersRouter);
+const uri = process.env.ATLAS_URI;
+mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true});
+mongoose.connection.once('open', () => {
+    console.log("MongoDB database connection established successfully");
+})
 
+const exercisesRouter = require('./routes/exercises');
+const usersRouter = require('./routes/users');
 
-app.listen(3000, () => console.log('server started'))
+app.use('/exercises', exercisesRouter);
+app.use('/users', usersRouter);
+
+app.listen(port, () => {
+    console.log(`Server is running on port: ${port}`);
+}); 

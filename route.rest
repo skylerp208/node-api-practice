@@ -1,5 +1,1 @@
-GET http://localhost:3000/subscribers 
-
-###
-
-GET http://localhost:3000/subscribers/15
+GET http://localhost:3000/users/add
